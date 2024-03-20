@@ -1,9 +1,9 @@
 pipeline {
     agent {label '!windows'}
     stages {
-         stage('Build') {
+         stage('build') {
             steps {
-                sh 'Building..." '
+                sh 'Building...'
             }
         }
         stage('SonarQube') {
