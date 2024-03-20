@@ -1,9 +1,9 @@
 pipeline {
     agent {label '!windows'}
     stages {
-        stage('build') {
+         stage('Build') {
             steps {
-                sh 'php --version'
+                sh 'Building..." '
             }
         }
         stage('SonarQube') {
