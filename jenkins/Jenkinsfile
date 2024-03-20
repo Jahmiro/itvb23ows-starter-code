@@ -10,10 +10,12 @@ pipeline {
             steps {
                 script { scannerHome = tool 'sonarqube-ows-scanner' }
                 withSonarQubeEnv('sonarqube-ows') {
-                    sh "${scannerHome}/bin/sonar-scanner \
+                    sh "/usr/local/bin/sonar-scanner
                         -Dsonar.projectKey=hiveOws"
                 }
             }
         }
     }
 }
+
+
