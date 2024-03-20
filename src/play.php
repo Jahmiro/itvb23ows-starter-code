@@ -12,13 +12,13 @@ $board = $_SESSION['board'];
 $hand = $_SESSION['hand'][$player];
 
 if (!$hand[$piece])
-    $_SESSION['error'] = "Player does not have tile";
+    {$_SESSION['error'] = "Player does not have tile";}
 elseif (isset($board[$to]))
-    $_SESSION['error'] = 'Board position is not empty';
+    {$_SESSION['error'] = 'Board position is not empty';}
 elseif (count($board) && !hasNeighBour($to, $board))
-    $_SESSION['error'] = "board position has no neighbour";
+    {$_SESSION['error'] = "board position has no neighbour";}
 elseif (array_sum($hand) < 11 && !neighboursAreSameColor($player, $to, $board))
-    $_SESSION['error'] = "Board position has opposing neighbour";
+    {$_SESSION['error'] = "Board position has opposing neighbour";}
 elseif (array_sum($hand) <= 8 && $hand['Q']) {
     $_SESSION['error'] = 'Must play queen bee';
 } else {
