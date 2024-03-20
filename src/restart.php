@@ -19,4 +19,3 @@ $_SESSION['game_id'] = $db->insert_id;
 // Doorverwijzen naar index.php
 header('Location: index.php');
 exit(); // Zorg ervoor dat er geen code wordt uitgevoerd na de header-redirect
-?>
