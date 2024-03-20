@@ -3,7 +3,7 @@ pipeline {
     stages {
          stage('build') {
             steps {
-                sh 'Building...'
+                sh 'echo "Building..."'
             }
         }
         stage('SonarQube') {
