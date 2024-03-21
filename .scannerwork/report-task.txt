@@ -2,5 +2,5 @@ projectKey=ows-sonarqube
 serverUrl=http://localhost:9000
 serverVersion=10.4.1.88267
 dashboardUrl=http://localhost:9000/dashboard?id=ows-sonarqube
-ceTaskId=ae622891-a73f-4e40-9432-975e24e256da
-ceTaskUrl=http://localhost:9000/api/ce/task?id=ae622891-a73f-4e40-9432-975e24e256da
+ceTaskId=943e9994-b1c8-41bb-9d4c-b3a9c81f3cd6
+ceTaskUrl=http://localhost:9000/api/ce/task?id=943e9994-b1c8-41bb-9d4c-b3a9c81f3cd6
