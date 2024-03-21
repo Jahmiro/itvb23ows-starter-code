@@ -16,7 +16,7 @@ function setState($state)
 }
 
 // Databaseverbinding
-$mysqli = new mysqli('localhost', 'root', '', 'hive');
+$mysqli = new mysqli('hiveDatabase', 'root', '', 'hive', 3306);
 
 // Controleer op fouten
 if ($mysqli->connect_error) {
