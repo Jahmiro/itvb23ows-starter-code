@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 function getState()
 {
     return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
@@ -16,7 +14,7 @@ function setState($state)
 }
 
 // Databaseverbinding
-$mysqli = new mysqli('hiveDatabase', 'root', '', 'hive', 3306);
+$mysqli = new mysqli('db', 'root', '', 'hive');
 
 // Controleer op fouten
 if ($mysqli->connect_error) {

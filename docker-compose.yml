@@ -12,12 +12,13 @@ services:
         ports:
             - 8001:80
     db:
-        container_name: hiveDatabase
-        image: mysql
-        restart: always
+        build: ./database
+        image: db
         environment:
           MYSQL_ROOT_PASSWORD: ''
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: hive
         ports:
-            - "9906:3306"
+            - "3306:3306"
+volumes:
+    mysql_data:
