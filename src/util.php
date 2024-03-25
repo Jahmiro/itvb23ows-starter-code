@@ -6,9 +6,15 @@ function isNeighbour($a, $b)
 {
     $a = explode(',', $a);
     $b = explode(',', $b);
-    if ($a[0] == $b[0] && abs($a[1] - $b[1]) == 1) {return true;}
-    if ($a[1] == $b[1] && abs($a[0] - $b[0]) == 1) {return true;}
-    if ($a[0] + $a[1] == $b[0] + $b[1]) {return true;}
+    if ($a[0] == $b[0] && abs($a[1] - $b[1]) == 1) {
+        return true;
+    }
+    if ($a[1] == $b[1] && abs($a[0] - $b[0]) == 1) {
+        return true;
+    }
+    if ($a[0] + $a[1] == $b[0] + $b[1]) {
+        return true;
+    }
     return false;
 }
 

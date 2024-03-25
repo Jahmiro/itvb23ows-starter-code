@@ -15,11 +15,3 @@ function setState($state)
 
 // Databaseverbinding
 $mysqli = new mysqli('db', 'root', '', 'hive');
-
-// Controleer op fouten
-if ($mysqli->connect_error) {
-    die('Databaseverbinding mislukt: ' . $mysqli->connect_error);
-}
-
-// Geef de verbinding terug
-return $mysqli;
