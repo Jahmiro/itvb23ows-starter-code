@@ -1,24 +1,13 @@
 <?php
 
-function getState()
+// Functie om de databaseverbinding op te zetten
+function getDBConnection()
 {
-    return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
+    $mysqli = new mysqli('db', 'root', '', 'hive');
+
+    if ($mysqli->connect_error) {
+        die('Databaseverbinding mislukt: ' . $mysqli->connect_error);
+    }
+
+    return $mysqli;
 }
-
-function setState($state)
-{
-    list($a, $b, $c) = unserialize($state);
-    $_SESSION['hand'] = $a;
-    $_SESSION['board'] = $b;
-    $_SESSION['player'] = $c;
-}
-
-// Databaseverbinding
-$mysqli = new mysqli('db', 'root', '', 'hive');
-
-if ($mysqli->connect_error) {
-    die('Databaseverbinding mislukt: ' . $mysqli->connect_error);
-}
-
-// Geef de verbinding terug
-return $mysqli;

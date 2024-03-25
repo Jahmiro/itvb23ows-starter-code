@@ -68,3 +68,28 @@ function slide($board, $from, $to)
     }
     return min(len($board[$common[0]]), len($board[$common[1]])) <= max(len($board[$from]), len($board[$to]));
 }
+
+function getAvailableTiles($hand, $player)
+{
+    $availableTiles = [];
+    foreach ($hand[$player] as $tile => $count) {
+        if ($count > 0) {
+            $availableTiles[] = $tile;
+        }
+    }
+    return $availableTiles;
+}
+
+function getState()
+{
+    return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
+}
+
+function setState($state)
+{
+    list($a, $b, $c) = unserialize($state);
+    $_SESSION['hand'] = $a;
+    $_SESSION['board'] = $b;
+    $_SESSION['player'] = $c;
+}
+
