@@ -23,6 +23,11 @@ $to = array_unique($to);
 if (!count($to)) {
     $to[] = '0,0';
 }
+if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
+    $available_pieces = ['Q'];
+} else {
+    $available_pieces = array_keys(array_filter($hand[$player]));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,24 +99,26 @@ if (!count($to)) {
                 } ?>
     </div>
     <form method="post" action="play.php">
-        <select name="piece">
-            <?php
-            foreach ($hand[$player] as $tile => $ct) {
-                if ($ct > 0) { // Alleen tonen als de steen beschikbaar is
-                    echo "<option value=\"$tile\">$tile</option>";
-                }
+    <select name="piece">
+        <?php
+        if ($_SESSION['player'] == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
+            echo "<option value=\"Q\">Q</option>";
+        } else {
+            foreach ($available_pieces as $piece) {
+                echo "<option value=\"$piece\">$piece</option>";
             }
-            ?>
-        </select>
-        <select name="to">
-            <?php
-            foreach ($to as $pos) {
-                echo "<option value=\"$pos\">$pos</option>";
-            }
-            ?>
-        </select>
-        <input type="submit" value="Play">
-    </form>
+        }
+        ?>
+    </select>
+    <select name="to">
+        <?php
+        foreach ($to as $pos) {
+            echo "<option value=\"$pos\">$pos</option>";
+        }
+        ?>
+    </select>
+    <input type="submit" value="Play">
+</form>
     <form method="post" action="move.php">
         <select name="from">
             <?php
