@@ -63,6 +63,7 @@ if (!isset($board[$from])) {
         } else {
             $board[$to] = [$tile];
         }
+        unset($board[$from]);
         $_SESSION['player'] = 1 - $_SESSION['player'];
         include_once 'database.php';
         $db = new Database();

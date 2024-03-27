@@ -20,4 +20,22 @@ class MoveTest extends TestCase {
         $this->assertEquals('Q', $_SESSION['board']['1,1'][0][1]);
         $this->assertEquals(0, $_SESSION['player']);
     }
+
+    public function testMoveTileLeavesDestinationAvailable() {
+        $_SESSION['player'] = 0;
+        $_SESSION['board'] = [
+            '0,0' => [['0', 'Q']],
+            '1,1' => [['0', 'B']],
+        ];
+        $_SESSION['hand'] = [
+            0 => ['Q' => 1],
+            1 => ['Q' => 0],
+        ];
+        $_POST['from'] = '0,0';
+        $_POST['to'] = '1,1';
+
+        include 'move.php';
+
+        $this->assertArrayNotHasKey('1,1', $_SESSION['board']);
+    }
 }
