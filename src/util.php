@@ -25,6 +25,7 @@ function hasNeighBour($a, $board)
             return true;
         }
     }
+    return false;
 }
 
 function neighboursAreSameColor($player, $a, $board)
@@ -59,15 +60,21 @@ function slide($board, $from, $to)
     foreach ($GLOBALS['OFFSETS'] as $pq) {
         $p = $b[0] + $pq[0];
         $q = $b[1] + $pq[1];
-        if (isNeighbour($from, $p . "," . $q)) {
-            $common[] = $p . "," . $q;
+        $pos = "$p,$q";
+        if (array_key_exists($pos, $board)) {
+            $common[] = $pos;
         }
     }
-    if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
+    if (empty($common)) {
         return false;
     }
-    return min(len($board[$common[0]]), len($board[$common[1]])) <= max(len($board[$from]), len($board[$to]));
+    $len_common_0 = isset($board[$common[0]]) ? len($board[$common[0]]) : 0;
+    $len_common_1 = isset($board[$common[1]]) ? len($board[$common[1]]) : 0;
+    $len_from = isset($board[$from]) ? len($board[$from]) : 0;
+    $len_to = isset($board[$to]) ? len($board[$to]) : 0;
+    return min($len_common_0, $len_common_1) <= max($len_from, $len_to);
 }
+
 
 function getAvailableTiles($hand, $player)
 {
@@ -92,4 +99,3 @@ function setState($state)
     $_SESSION['board'] = $b;
     $_SESSION['player'] = $c;
 }
-
