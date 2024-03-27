@@ -10,8 +10,11 @@ $_SESSION['hand'] = [
 ];
 $_SESSION['player'] = 0;
 
-$db = getDBConnection();
-$db->prepare('INSERT INTO games VALUES ()')->execute();
-$_SESSION['game_id'] = $db->insert_id;
+$db = new Database();
+
+$db->insertGame();
+
+$_SESSION['game_id'] = $db->getLastInsertId();
 
 header('Location: index.php');
+
