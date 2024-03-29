@@ -3,7 +3,8 @@ session_start();
 
 include_once 'util.php';
 require_once 'grasshopper.php';
-require_once 'ant.php'; // Include the ant logic
+require_once 'ant.php'; 
+require_once 'spider.php'; 
 
 $from = $_POST['from'];
 $to = $_POST['to'];
@@ -48,7 +49,7 @@ if (!isset($board[$from])) {
                     $_SESSION['error'] = 'Tile must slide';
                 }
             } elseif ($tile[1] == "G") {
-                $validMove = isValidMove($board, $from, $to);
+                $validMove = isValidGrasshopperMove($board, $from, $to);
                 if (!$validMove) {
                     $_SESSION['error'] = "Invalid move for grasshopper: Invalid move from $from to $to";
                 }
@@ -56,6 +57,11 @@ if (!isset($board[$from])) {
                 $validMove = isValidAntMove($board, $from, $to); // Check validity for soldier ant
                 if (!$validMove) {
                     $_SESSION['error'] = "Invalid move for soldier ant: Invalid move from $from to $to";
+                }
+            } elseif ($tile[1] == "S") { // Check if the tile is a spider
+                $validMove = isValidSpiderMove($board, $from, $to); // Check validity for spider
+                if (!$validMove) {
+                    $_SESSION['error'] = "Invalid move for spider: Invalid move from $from to $to";
                 }
             }
         }

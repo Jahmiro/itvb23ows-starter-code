@@ -14,6 +14,6 @@ class GrasshopperTest extends TestCase
             "0,1" => [[1, "Q"]],
         ];
 
-        $this->assertTrue(isValidMove($board, "0,0", "0,2"));
+        $this->assertTrue(isValidGrasshopperMove($board, "0,0", "0,2"));
     }
 }
