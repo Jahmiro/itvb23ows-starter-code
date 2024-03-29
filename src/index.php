@@ -2,6 +2,7 @@
 session_start();
 
 include_once 'util.php';
+include_once 'database.php';
 
 if (!isset($_SESSION['board'])) {
     header('Location: restart.php');
@@ -22,59 +23,18 @@ $to = array_unique($to);
 if (!count($to)) {
     $to[] = '0,0';
 }
+if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
+    $available_pieces = ['Q'];
+} else {
+    $available_pieces = array_keys(array_filter($hand[$player]));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <title>Hive</title>
-    <style>
-        div.board {
-            width: 60%;
-            height: 100%;
-            min-height: 500px;
-            float: left;
-            overflow: scroll;
-            position: relative;
-        }
-
-        div.board div.tile {
-            position: absolute;
-        }
-
-        div.tile {
-            display: inline-block;
-            width: 4em;
-            height: 4em;
-            border: 1px solid black;
-            box-sizing: border-box;
-            font-size: 50%;
-            padding: 2px;
-        }
-
-        div.tile span {
-            display: block;
-            width: 100%;
-            text-align: center;
-            font-size: 200%;
-        }
-
-        div.player0 {
-            color: black;
-            background: white;
-        }
-
-        div.player1 {
-            color: white;
-            background: black
-        }
-
-        div.stacked {
-            border-width: 3px;
-            border-color: red;
-            padding: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 
 <body>
@@ -139,22 +99,26 @@ if (!count($to)) {
                 } ?>
     </div>
     <form method="post" action="play.php">
-        <select name="piece">
-            <?php
-            foreach ($hand[$player] as $tile => $ct) {
-                echo "<option value=\"$tile\">$tile</option>";
+    <select name="piece">
+        <?php
+        if ($_SESSION['player'] == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
+            echo "<option value=\"Q\">Q</option>";
+        } else {
+            foreach ($available_pieces as $piece) {
+                echo "<option value=\"$piece\">$piece</option>";
             }
-            ?>
-        </select>
-        <select name="to">
-            <?php
-            foreach ($to as $pos) {
-                echo "<option value=\"$pos\">$pos</option>";
-            }
-            ?>
-        </select>
-        <input type="submit" value="Play">
-    </form>
+        }
+        ?>
+    </select>
+    <select name="to">
+        <?php
+        foreach ($to as $pos) {
+            echo "<option value=\"$pos\">$pos</option>";
+        }
+        ?>
+    </select>
+    <input type="submit" value="Play">
+</form>
     <form method="post" action="move.php">
         <select name="from">
             <?php
@@ -184,8 +148,9 @@ if (!count($to)) {
             unset($_SESSION['error']); ?></strong>
     <ol>
         <?php
-        $db = include_once 'database.php';
-        $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = ' . $_SESSION['game_id']);
+        $db = new Database();
+        $stmt = $db->getDBConnection()->prepare('SELECT * FROM moves WHERE game_id = ?');
+        $stmt->bind_param('i', $_SESSION['game_id']);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_array()) {

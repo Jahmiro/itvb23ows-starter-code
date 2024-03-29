@@ -1,27 +1,45 @@
 <?php
 
-session_start();
-
-function getState()
+class Database
 {
-    return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = new mysqli('db', 'root', '', 'hive');
+
+        if ($this->db->connect_error) {
+            die('Databaseverbinding mislukt: ' . $this->db->connect_error);
+        }
+    }
+
+    public function getDBConnection()
+    {
+        return $this->db;
+    }
+
+    public function insertGame()
+    {
+        $query = "INSERT INTO games VALUES ()";
+        $result = $this->db->query($query);
+
+        if (!$result) {
+            die('Fout bij het toevoegen van het spel: ' . $this->db->error);
+        }
+    }
+
+    public function getLastInsertId()
+    {
+        return $this->db->insert_id;
+    }
+
+    public function prepare($query)
+    {
+        return $this->db->prepare($query);
+    }
+
+    public function insertId()
+    {
+        return $this->db->insert_id;
+    }
 }
-
-function setState($state)
-{
-    list($a, $b, $c) = unserialize($state);
-    $_SESSION['hand'] = $a;
-    $_SESSION['board'] = $b;
-    $_SESSION['player'] = $c;
-}
-
-// Databaseverbinding
-$mysqli = new mysqli('hiveDatabase', 'root', '', 'hive', 3306);
-
-// Controleer op fouten
-if ($mysqli->connect_error) {
-    die('Databaseverbinding mislukt: ' . $mysqli->connect_error);
-}
-
-// Geef de verbinding terug
-return $mysqli;

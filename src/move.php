@@ -14,7 +14,7 @@ unset($_SESSION['error']);
 
 if (!isset($board[$from])) {
     $_SESSION['error'] = 'Board position is empty';
-} elseif ($board[$from][count($board[$from]) - 1][0] != $player) {
+} elseif (count($board[$from]) == 0 || $board[$from][count($board[$from]) - 1][0] != $player) {
     $_SESSION['error'] = "Tile is not owned by player";
 } elseif ($hand['Q']) {
     $_SESSION['error'] = "Queen bee is not played";
@@ -63,12 +63,17 @@ if (!isset($board[$from])) {
         } else {
             $board[$to] = [$tile];
         }
+        unset($board[$from]);
         $_SESSION['player'] = 1 - $_SESSION['player'];
-        $db = include_once 'database.php';
-        $stmt = $db->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state) values (?, "move", ?, ?, ?, ?)');
-        $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], getState());
+        include_once 'database.php';
+        $db = new Database();
+        $state = getState(); // Store state in a variable
+        $stmt = $db->prepare(
+            'INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state) VALUES (?, "move", ?, ?, ?, ?)'
+        );
+        $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], $state);
         $stmt->execute();
-        $_SESSION['last_move'] = $db->insert_id;
+        $_SESSION['last_move'] = $db->insertId();
     }
     $_SESSION['board'] = $board;
 }

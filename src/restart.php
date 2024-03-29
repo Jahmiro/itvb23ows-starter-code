@@ -1,21 +1,20 @@
 <?php
+
 session_start();
 
-// Inclusie van database.php en het verkrijgen van de databaseverbinding
-$db = include_once 'database.php';
-if (!$db) {
-    die("Databaseverbinding mislukt");
-}
+include_once 'database.php';
 
-// Voorbereiden en uitvoeren van de query om een nieuw spel op te slaan
-$query = $db->prepare('INSERT INTO games () VALUES ()');
-if (!$query->execute()) {
-    die("Fout bij het uitvoeren van de query: " . $query->error);
-}
+$_SESSION['board'] = [];
+$_SESSION['hand'] = [
+    0 => ["Q" => 1, "B" => 2, "S" => 2, "A" => 3, "G" => 3], 1 => ["Q" => 1, "B" => 2, "S" => 2, "A" => 3, "G" => 3]
+];
+$_SESSION['player'] = 0;
 
-// Het verkrijgen van het gegenereerde spel-ID
-$_SESSION['game_id'] = $db->insert_id;
+$db = new Database();
 
-// Doorverwijzen naar index.php
+$db->insertGame();
+
+$_SESSION['game_id'] = $db->getLastInsertId();
+
 header('Location: index.php');
-exit(); // Zorg ervoor dat er geen code wordt uitgevoerd na de header-redirect
+
