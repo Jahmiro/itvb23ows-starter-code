@@ -25,7 +25,6 @@ function hasNeighBour($a, $board)
             return true;
         }
     }
-    return false;
 }
 
 function neighboursAreSameColor($player, $a, $board)

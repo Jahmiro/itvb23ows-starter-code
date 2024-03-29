@@ -1,5 +1,5 @@
 <?php
-function isValidMove($board, $from, $to) {
+function isValidGrasshopperMove($board, $from, $to) {
 
 $fromCoords = explode(',', $from);
 $toCoords = explode(',', $to);
@@ -51,7 +51,7 @@ return true;
 
 function grasshopper($board, $from, $to)
 {
-if (!isValidMove($board, $from, $to)) {
+if (!isValidGrasshopperMove($board, $from, $to)) {
     return false;
 }
 
