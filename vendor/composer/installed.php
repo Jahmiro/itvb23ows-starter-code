@@ -1,15 +1,24 @@
 <?php return array(
     'root' => array(
-        'name' => 'vendor/name',
+        'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '30f9419e138e730904c1160a3a7dca24d30e47e1',
+        'reference' => '67acad5ff7ecf382048993f5ae32b54c47f9357e',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
+        '__root__' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '67acad5ff7ecf382048993f5ae32b54c47f9357e',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'myclabs/deep-copy' => array(
             'pretty_version' => '1.11.1',
             'version' => '1.11.1.0',
@@ -92,9 +101,9 @@
             'dev_requirement' => true,
         ),
         'phpunit/phpunit' => array(
-            'pretty_version' => '10.5.15',
-            'version' => '10.5.15.0',
-            'reference' => '86376e05e8745ed81d88232ff92fee868247b07b',
+            'pretty_version' => '10.5.16',
+            'version' => '10.5.16.0',
+            'reference' => '18f8d4a5f52b61fdd9370aaae3167daa0eeb69cd',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/phpunit',
             'aliases' => array(),
@@ -243,15 +252,6 @@
             'install_path' => __DIR__ . '/../theseer/tokenizer',
             'aliases' => array(),
             'dev_requirement' => true,
-        ),
-        'vendor/name' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '30f9419e138e730904c1160a3a7dca24d30e47e1',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../../',
-            'aliases' => array(),
-            'dev_requirement' => false,
         ),
     ),
 );
