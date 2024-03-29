@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../src/util.php';
+require_once __DIR__ . '/../src/grasshopper.php';
 
 
 class GrasshopperTest extends TestCase
