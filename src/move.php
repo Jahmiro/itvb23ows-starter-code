@@ -3,6 +3,7 @@
 session_start();
 
 include_once 'util.php';
+require_once 'grasshopper.php';
 
 $from = $_POST['from'];
 $to = $_POST['to'];
@@ -11,8 +12,6 @@ $player = $_SESSION['player'];
 $board = $_SESSION['board'];
 $hand = $_SESSION['hand'][$player];
 unset($_SESSION['error']);
-
-echo "Move from: $from to: $to<br>"; // Debugging statement
 
 if (!isset($board[$from])) {
     $_SESSION['error'] = 'Board position is empty';
@@ -49,10 +48,7 @@ if (!isset($board[$from])) {
                     $_SESSION['error'] = 'Tile must slide';
                 }
             } elseif ($tile[1] == "G") {
-                echo "Checking grasshopper move<br>"; // Debugging statement
-                var_dump($board, $from, $to); // Debugging statement
                 $validMove = isValidMove($board, $from, $to);
-                var_dump($validMove); // Debugging statement
                 if (!$validMove) {
                     $_SESSION['error'] = "Invalid move for grasshopper: Invalid move from $from to $to";
                 }
