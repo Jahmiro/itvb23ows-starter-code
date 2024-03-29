@@ -1,9 +1,9 @@
 <?php
-
 session_start();
 
 include_once 'util.php';
 require_once 'grasshopper.php';
+require_once 'ant.php'; // Include the ant logic
 
 $from = $_POST['from'];
 $to = $_POST['to'];
@@ -51,6 +51,11 @@ if (!isset($board[$from])) {
                 $validMove = isValidMove($board, $from, $to);
                 if (!$validMove) {
                     $_SESSION['error'] = "Invalid move for grasshopper: Invalid move from $from to $to";
+                }
+            } elseif ($tile[1] == "A") { // Check if the tile is a soldier ant
+                $validMove = isValidAntMove($board, $from, $to); // Check validity for soldier ant
+                if (!$validMove) {
+                    $_SESSION['error'] = "Invalid move for soldier ant: Invalid move from $from to $to";
                 }
             }
         }
