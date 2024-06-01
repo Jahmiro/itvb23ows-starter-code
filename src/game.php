@@ -3,9 +3,9 @@ include_once 'database.php';
 include_once 'board.php';
 include_once 'player.php';
 include_once 'util.php';
-include_once 'ant.php';
-include_once 'grasshopper.php';
-include_once 'spider.php';
+include_once './insects/ant.php';
+include_once './insects/grasshopper.php';
+include_once './insects/spider.php';
 
 class Game {
     private $board;
