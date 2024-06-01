@@ -1,11 +1,9 @@
 <?php
 
-class Database
-{
+class Database {
     private $db;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->db = new mysqli('db', 'root', '', 'hive');
 
         if ($this->db->connect_error) {
@@ -13,13 +11,11 @@ class Database
         }
     }
 
-    public function getDBConnection()
-    {
+    public function getDBConnection() {
         return $this->db;
     }
 
-    public function insertGame()
-    {
+    public function insertGame() {
         $query = "INSERT INTO games VALUES ()";
         $result = $this->db->query($query);
 
@@ -28,18 +24,20 @@ class Database
         }
     }
 
-    public function getLastInsertId()
-    {
+    public function getLastInsertId() {
         return $this->db->insert_id;
     }
 
-    public function prepare($query)
-    {
+    public function prepare($query) {
         return $this->db->prepare($query);
     }
 
-    public function insertId()
-    {
-        return $this->db->insert_id;
+    public function query($query) {
+        return $this->db->query($query);
+    }
+
+    public function close() {
+        $this->db->close();
     }
 }
+?>

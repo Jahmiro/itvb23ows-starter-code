@@ -1,55 +1,91 @@
 <?php
-include_once 'util.php';
-function isValidSpiderMove($board, $from, $to)
-{
-    $visited = [];
-    $steps = 0;
 
-    $positionsToExplore = [$from];
+class Spider {
+    private $board;
+    private $player;
+    private $from;
+    private $to;
 
-    while (!empty($positionsToExplore)) {
-        $current = array_shift($positionsToExplore);
+    public function __construct($board, $player) {
+        $this->board = $board;
+        $this->player = $player;
+    }
 
-        echo "Exploring position: $current\n"; // Debug-uitvoer
+    public function move($from, $to) {
+        $this->from = $from;
+        $this->to = $to;
 
-        if ($current == $to) {
-            echo "Destination position reached\n"; // Debug-uitvoer
+        if ($this->isValidMove()) {
+            $this->board->movePiece($this->from, $this->to);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function isValidMove() {
+        if ($this->from == $this->to) {
+            return false;
+        }
+
+        if (!$this->isThreeStepMove()) {
+            return false;
+        }
+
+        if (!$this->canSlideTo($this->from, $this->to)) {
+            return false; 
+        }
+
+        return true;
+    }
+
+    private function isThreeStepMove() {
+        $visited = [];
+        return $this->dfs($this->from, $visited, 0);
+    }
+
+    private function dfs($current, &$visited, $steps) {
+        if ($steps > 3) {
+            return false;
+        }
+
+        if ($steps == 3 && $current == $this->to) {
             return true;
         }
 
         $visited[$current] = true;
-        $steps++;
-
-        if ($steps >= 3) {
-            break; // Verlaat de lus als de spin al drie stappen heeft gezet
+        foreach ($this->getAdjacentPositions($current) as $adjPos) {
+            if (!isset($visited[$adjPos]) && $this->canSlideTo($current, $adjPos)) {
+                if ($this->dfs($adjPos, $visited, $steps + 1)) {
+                    return true;
+                }
+            }
         }
-
-        foreach ($GLOBALS['OFFSETS'] as $pq) {
-            $p = explode(',', $current)[0] + $pq[0];
-            $q = explode(',', $current)[1] + $pq[1];
-
-            // Sla diagonale posities over
-            if ($pq[0] != 0 && $pq[1] != 0) {
-                continue;
-            }
-
-            $position = "$p,$q";
-
-            if ($position == $from || isset($visited[$position])) {
-                continue; // Overslaan als het dezelfde positie is als het startpunt of al bezocht
-            }
-
-            // Controleer of de buurpositie leeg is
-            if (isset($board[$position])) {
-                continue;
-            }
-
-            // Voeg de positie toe aan de lijst met te verkennen posities
-            echo "Adding position to explore: $position\n"; // Debug-uitvoer
-            $positionsToExplore[] = $position;
-        }
+        unset($visited[$current]);
+        return false;
     }
 
-    echo "No path found to destination\n"; // Debug-uitvoer
-    return false;
+    private function canSlideTo($from, $to) {
+        $adjacentPositions = $this->getAdjacentPositions($to);
+        foreach ($adjacentPositions as $pos) {
+            if (isset($this->board->getPositions()[$pos]) && $pos != $from) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function getAdjacentPositions($position) {
+        $adjacentPositions = [];
+        $coords = explode(',', $position);
+        $p = intval($coords[0]);
+        $q = intval($coords[1]);
+
+        foreach ($GLOBALS['OFFSETS'] as $offset) {
+            $adjacentPositions[] = ($p + $offset[0]) . ',' . ($q + $offset[1]);
+        }
+
+        return $adjacentPositions;
+    }
 }
+?>

@@ -1,61 +1,75 @@
 <?php
-function isValidGrasshopperMove($board, $from, $to) {
 
-$fromCoords = explode(',', $from);
-$toCoords = explode(',', $to);
+class Grasshopper {
+    private $board;
+    private $player;
+    private $from;
+    private $to;
 
-$dx = $toCoords[0] - $fromCoords[0];
-$dy = $toCoords[1] - $fromCoords[1];
-
-if ($dx == 0 && $dy == 0) {
-    return false;
-}
-
-if ($to == $from) {
-    return false;
-}
-
-if (isset($board[$to])) {
-    return false;
-}
-
-// Controleer of er minstens één bezet veld tussen de start- en eindposities is
-$x = $fromCoords[0];
-$y = $fromCoords[1];
-
-$occupiedBetween = false;
-
-while ($x !== $toCoords[0] || $y !== $toCoords[1]) {
-    $pos = "$x,$y";
-
-    if (isset($board[$pos])) {
-        $occupiedBetween = true;
+    public function __construct($board, $player) {
+        $this->board = $board;
+        $this->player = $player;
     }
 
-    $x += ($dx === 0) ? 0 : $dx / abs($dx);
-    $y += ($dy === 0) ? 0 : $dy / abs($dy);
+    public function move($from, $to) {
+        $this->from = $from;
+        $this->to = $to;
 
-    if ($x == $toCoords[0] && $y == $toCoords[1]) {
-        break;
+        if ($this->isValidMove()) {
+            $this->board->movePiece($this->from, $this->to);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function isValidMove() {
+        if ($this->from == $this->to) {
+            return false; 
+        }
+
+        if (!$this->isStraightLine()) {
+            return false; 
+        }
+
+        if (!$this->canJump()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function isStraightLine() {
+        $fromCoords = explode(',', $this->from);
+        $toCoords = explode(',', $this->to);
+
+        return $fromCoords[0] == $toCoords[0] || $fromCoords[1] == $toCoords[1];
+    }
+
+    private function canJump() {
+        $fromCoords = explode(',', $this->from);
+        $toCoords = explode(',', $this->to);
+        $direction = $this->getDirection($fromCoords, $toCoords);
+
+        $current = $fromCoords;
+        $jumpedOverPiece = false;
+        while ($current != $toCoords) {
+            $current[0] += $direction[0];
+            $current[1] += $direction[1];
+            $currentPos = implode(',', $current);
+            if (isset($this->board->getPositions()[$currentPos])) {
+                $jumpedOverPiece = true;
+            } elseif ($current != $toCoords) {
+                return false;
+            }
+        }
+        return $jumpedOverPiece;
+    }
+
+    private function getDirection($fromCoords, $toCoords) {
+        $dx = $toCoords[0] - $fromCoords[0];
+        $dy = $toCoords[1] - $fromCoords[1];
+        return [$dx == 0 ? 0 : $dx / abs($dx), $dy == 0 ? 0 : $dy / abs($dy)];
     }
 }
-
-if (!$occupiedBetween) {
-    return false;
-}
-
-return true;
-}
-
-
-
-function grasshopper($board, $from, $to)
-{
-if (!isValidGrasshopperMove($board, $from, $to)) {
-    return false;
-}
-
-$tile = array_pop($board[$from]);
-$board[$to] = [$tile];
-return $board;
-}
+?>

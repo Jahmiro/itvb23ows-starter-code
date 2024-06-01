@@ -1,18 +1,15 @@
 <?php
-session_start();
+ob_start();
+include_once 'game.php';
 
-include_once 'util.php';
-include_once 'database.php';
-
-if (!isset($_SESSION['board'])) {
-    header('Location: restart.php');
-    exit(0);
-}
-$board = $_SESSION['board'];
-$player = $_SESSION['player'];
-$hand = $_SESSION['hand'];
-
+$game = new Game();
+$board = $game->getBoard()->getPositions();
+$players = $game->getPlayers();
+$currentPlayer = $game->getCurrentPlayer();
+$playerHand = $players[$currentPlayer]->getPieces();
+$availablePieces = array_keys(array_filter($playerHand));
 $to = [];
+
 foreach ($GLOBALS['OFFSETS'] as $pq) {
     foreach (array_keys($board) as $pos) {
         $pq2 = explode(',', $pos);
@@ -23,20 +20,16 @@ $to = array_unique($to);
 if (!count($to)) {
     $to[] = '0,0';
 }
-if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
-    $available_pieces = ['Q'];
-} else {
-    $available_pieces = array_keys(array_filter($hand[$player]));
+if ($currentPlayer == 0 && count($board) == 6 && isset($playerHand['Q']) && $playerHand['Q'] > 0) {
+    $availablePieces = ['Q'];
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>Hive</title>
     <link rel="stylesheet" href="/css/main.css">
 </head>
-
 <body>
     <div class="board">
         <?php
@@ -53,8 +46,6 @@ if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
         }
         foreach (array_filter($board) as $pos => $tile) {
             $pq = explode(',', $pos);
-            $pq[0];
-            $pq[1];
             $h = count($tile);
             echo '<div class="tile player';
             echo $tile[$h - 1][0];
@@ -65,7 +56,7 @@ if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
             echo ($pq[0] - $min_p) * 4 + ($pq[1] - $min_q) * 2;
             echo 'em; top: ';
             echo ($pq[1] - $min_q) * 4;
-            echo "em;\">($pq[0],$pq[1])<span>";
+            echo 'em;">(' . $pq[0] . ',' . $pq[1] . ')<span>';
             echo $tile[$h - 1][1];
             echo '</span></div>';
         }
@@ -74,9 +65,9 @@ if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
     <div class="hand">
         White:
         <?php
-        foreach ($hand[0] as $tile => $ct) {
+        foreach ($players[0]->getPieces() as $tile => $ct) {
             for ($i = 0; $i < $ct; $i++) {
-                echo '<div class="tile player0"><span>' . $tile . "</span></div> ";
+                echo '<div class="tile player0"><span>' . $tile . '</span></div> ';
             }
         }
         ?>
@@ -84,53 +75,49 @@ if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
     <div class="hand">
         Black:
         <?php
-        foreach ($hand[1] as $tile => $ct) {
+        foreach ($players[1]->getPieces() as $tile => $ct) {
             for ($i = 0; $i < $ct; $i++) {
-                echo '<div class="tile player1"><span>' . $tile . "</span></div> ";
+                echo '<div class="tile player1"><span>' . $tile . '</span></div> ';
             }
         }
         ?>
     </div>
     <div class="turn">
-        Turn: <?php if ($player == 0) {
-                    echo "White";
-                } else {
-                    echo "Black";
-                } ?>
+        Turn: <?php echo ($currentPlayer == 0) ? "White" : "Black"; ?>
     </div>
     <form method="post" action="play.php">
-    <select name="piece">
-        <?php
-        if ($_SESSION['player'] == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
-            echo "<option value=\"Q\">Q</option>";
-        } else {
-            foreach ($available_pieces as $piece) {
-                echo "<option value=\"$piece\">$piece</option>";
-            }
-        }
-        ?>
-    </select>
-    <select name="to">
-        <?php
-        foreach ($to as $pos) {
-            echo "<option value=\"$pos\">$pos</option>";
-        }
-        ?>
-    </select>
-    <input type="submit" value="Play">
-</form>
-    <form method="post" action="move.php">
-        <select name="from">
+        <select name="piece">
             <?php
-            foreach (array_keys($board) as $pos) {
-                echo "<option value=\"$pos\">$pos</option>";
+            if ($currentPlayer == 0 && count($board) == 6 && isset($playerHand['Q']) && $playerHand['Q'] > 0) {
+                echo "<option value=\"Q\">Q</option>";
+            } else {
+                foreach ($availablePieces as $piece) {
+                    echo '<option value="' . $piece . '">' . $piece . '</option>';
+                }
             }
             ?>
         </select>
         <select name="to">
             <?php
             foreach ($to as $pos) {
-                echo "<option value=\"$pos\">$pos</option>";
+                echo '<option value="' . $pos . '">' . $pos . '</option>';
+            }
+            ?>
+        </select>
+        <input type="submit" value="Play">
+    </form>
+    <form method="post" action="move.php">
+        <select name="from">
+            <?php
+            foreach (array_keys($board) as $pos) {
+                echo '<option value="' . $pos . '">' . $pos . '</option>';
+            }
+            ?>
+        </select>
+        <select name="to">
+            <?php
+            foreach ($to as $pos) {
+                echo '<option value="' . $pos . '">' . $pos . '</option>';
             }
             ?>
         </select>
@@ -148,8 +135,7 @@ if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
             unset($_SESSION['error']); ?></strong>
     <ol>
         <?php
-        $db = new Database();
-        $stmt = $db->getDBConnection()->prepare('SELECT * FROM moves WHERE game_id = ?');
+        $stmt = $game->getDb()->getDBConnection()->prepare('SELECT * FROM moves WHERE game_id = ?');
         $stmt->bind_param('i', $_SESSION['game_id']);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -162,5 +148,7 @@ if ($player == 0 && count($board) == 6 && $hand[0]['Q'] > 0) {
         <input type="submit" value="Undo">
     </form>
 </body>
-
 </html>
+<?php
+ob_end_flush();
+?>

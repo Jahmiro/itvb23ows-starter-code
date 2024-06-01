@@ -1,50 +1,87 @@
 <?php
-include_once 'util.php';
 
-function isValidAntMove($board, $from, $to)
-{
-    $visited = [];
+class Ant {
+    private $board;
+    private $player;
+    private $from;
+    private $to;
 
-    $positionsToExplore = [$from];
+    public function __construct($board, $player) {
+        $this->board = $board;
+        $this->player = $player;
+    }
 
-    while (!empty($positionsToExplore)) {
+    public function move($from, $to) {
+        $this->from = $from;
+        $this->to = $to;
 
-        $current = array_shift($positionsToExplore);
-
-        if ($current == $to) {
+        if ($this->isValidMove()) {
+            $this->board->movePiece($this->from, $this->to);
             return true;
-        }
-
-        $visited[$current] = true;
-
-        foreach ($GLOBALS['OFFSETS'] as $pq) {
-            $p = explode(',', $current)[0] + $pq[0];
-            $q = explode(',', $current)[1] + $pq[1];
-            $position = "$p,$q";
-
-
-            if (!isset($board[$position]) && !isset($visited[$position]) && hasNeighbour($position, $board)) {
-
-                $positionsToExplore[] = $position;
-            }
+        } else {
+            return false;
         }
     }
 
-    return false;
-}
+    private function isValidMove() {
+        if ($this->from == $this->to) {
+            return false; 
+        }
 
-function moveAnt($board, $from, $to)
-{
-    if (!isValidAntMove($board, explode(',', $from), $to)) {
+        if (!$this->canSlide()) {
+            return false; 
+        }
+
+        if (!$this->maintainsHive()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function canSlide() {
+        $adjacentPositions = $this->getAdjacentPositions($this->to);
+        foreach ($adjacentPositions as $pos) {
+            if (isset($this->board->getPositions()[$pos])) {
+                return true; // The destination is adjacent to another piece
+            }
+        }
         return false;
     }
 
-    // Verplaats de mier
-    $tile = array_pop($board[$from]);
-    $board[$to] = [$tile];
+    private function maintainsHive() {
+        $boardCopy = $this->board->getPositions();
+        unset($boardCopy[$this->from]);
+        return $this->isHiveConnected($boardCopy);
+    }
 
-    // Verwijder de mier van zijn oorspronkelijke positie
-    unset($board[$from]);
+    private function getAdjacentPositions($position) {
+        $adjacentPositions = [];
+        $coords = explode(',', $position);
+        $p = intval($coords[0]);
+        $q = intval($coords[1]);
 
-    return $board;
+        foreach ($GLOBALS['OFFSETS'] as $offset) {
+            $adjacentPositions[] = ($p + $offset[0]) . ',' . ($q + $offset[1]);
+        }
+
+        return $adjacentPositions;
+    }
+
+    private function isHiveConnected($board) {
+        $visited = [];
+        $positions = array_keys($board);
+        $this->dfs($positions[0], $board, $visited);
+        return count($visited) == count($positions);
+    }
+
+    private function dfs($pos, &$board, &$visited) {
+        $visited[$pos] = true;
+        foreach ($this->getAdjacentPositions($pos) as $adjPos) {
+            if (isset($board[$adjPos]) && !isset($visited[$adjPos])) {
+                $this->dfs($adjPos, $board, $visited);
+            }
+        }
+    }
 }
+?>
