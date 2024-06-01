@@ -1,34 +1,44 @@
 <?php
 
-$GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
+$OFFSETS = [
+    [1, 0], [-1, 0], [0, 1], [0, -1], [1, -1], [-1, 1]
+];
 
-function isNeighbour($a, $b)
-{
+function isNeighbour($a, $b) {
     $a = explode(',', $a);
     $b = explode(',', $b);
-    if ($a[0] == $b[0] && abs($a[1] - $b[1]) == 1) {
+
+    if ($a[0] - $b[0] == 1 && $a[1] == $b[1]) {
         return true;
     }
-    if ($a[1] == $b[1] && abs($a[0] - $b[0]) == 1) {
+    if ($a[0] - $b[0] == -1 && $a[1] == $b[1]) {
         return true;
     }
-    if ($a[0] + $a[1] == $b[0] + $b[1]) {
+    if ($a[1] - $b[1] == 1 && $a[0] == $b[0]) {
+        return true;
+    }
+    if ($a[1] - $b[1] == -1 && $a[0] == $b[0]) {
+        return true;
+    }
+    if ($a[0] - $b[0] == 1 && $a[1] - $b[1] == -1) {
+        return true;
+    }
+    if ($a[0] - $b[0] == -1 && $a[1] - $b[1] == 1) {
         return true;
     }
     return false;
 }
 
-function hasNeighBour($a, $board)
-{
+function hasNeighbour($a, $board) {
     foreach (array_keys($board) as $b) {
         if (isNeighbour($a, $b)) {
             return true;
         }
     }
+    return false;
 }
 
-function neighboursAreSameColor($player, $a, $board)
-{
+function neighboursAreSameColor($player, $a, $board) {
     foreach ($board as $b => $st) {
         if (!$st) {
             continue;
@@ -41,14 +51,12 @@ function neighboursAreSameColor($player, $a, $board)
     return true;
 }
 
-function len($tile)
-{
+function len($tile) {
     return $tile ? count($tile) : 0;
 }
 
-function slide($board, $from, $to)
-{
-    if (!hasNeighBour($to, $board)) {
+function slide($board, $from, $to) {
+    if (!hasNeighbour($to, $board)) {
         return false;
     }
     if (!isNeighbour($from, $to)) {
@@ -74,9 +82,7 @@ function slide($board, $from, $to)
     return min($len_common_0, $len_common_1) <= max($len_from, $len_to);
 }
 
-
-function getAvailableTiles($hand, $player)
-{
+function getAvailableTiles($hand, $player) {
     $availableTiles = [];
     foreach ($hand[$player] as $tile => $count) {
         if ($count > 0) {
@@ -86,15 +92,14 @@ function getAvailableTiles($hand, $player)
     return $availableTiles;
 }
 
-function getState()
-{
+function getState() {
     return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
 }
 
-function setState($state)
-{
+function setState($state) {
     list($a, $b, $c) = unserialize($state);
     $_SESSION['hand'] = $a;
     $_SESSION['board'] = $b;
     $_SESSION['player'] = $c;
 }
+?>
