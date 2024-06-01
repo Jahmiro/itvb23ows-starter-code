@@ -85,7 +85,8 @@ if ($currentPlayer == 0 && count($board) == 6 && isset($playerHand['Q']) && $pla
     <div class="turn">
         Turn: <?php echo ($currentPlayer == 0) ? "White" : "Black"; ?>
     </div>
-    <form method="post" action="play.php">
+    <form method="post" action="game_controller.php">
+        <input type="hidden" name="action" value="play">
         <select name="piece">
             <?php
             if ($currentPlayer == 0 && count($board) == 6 && isset($playerHand['Q']) && $playerHand['Q'] > 0) {
@@ -106,7 +107,8 @@ if ($currentPlayer == 0 && count($board) == 6 && isset($playerHand['Q']) && $pla
         </select>
         <input type="submit" value="Play">
     </form>
-    <form method="post" action="move.php">
+    <form method="post" action="game_controller.php">
+        <input type="hidden" name="action" value="move">
         <select name="from">
             <?php
             foreach (array_keys($board) as $pos) {
@@ -123,10 +125,12 @@ if ($currentPlayer == 0 && count($board) == 6 && isset($playerHand['Q']) && $pla
         </select>
         <input type="submit" value="Move">
     </form>
-    <form method="post" action="pass.php">
+    <form method="post" action="game_controller.php">
+        <input type="hidden" name="action" value="pass">
         <input type="submit" value="Pass">
     </form>
-    <form method="post" action="restart.php">
+    <form method="post" action="game_controller.php">
+        <input type="hidden" name="action" value="restart">
         <input type="submit" value="Restart">
     </form>
     <strong><?php if (isset($_SESSION['error'])) {
@@ -144,7 +148,8 @@ if ($currentPlayer == 0 && count($board) == 6 && isset($playerHand['Q']) && $pla
         }
         ?>
     </ol>
-    <form method="post" action="undo.php">
+    <form method="post" action="game_controller.php">
+        <input type="hidden" name="action" value="undo">
         <input type="submit" value="Undo">
     </form>
 </body>

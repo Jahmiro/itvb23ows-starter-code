@@ -19,7 +19,7 @@ class Game {
         }
 
         $this->db = new Database();
-        
+
         if (!isset($_SESSION['board']) || !is_string($_SESSION['board']) || !isset($_SESSION['players']) || !is_string($_SESSION['players'])) {
             $this->restart();
         } else {
@@ -27,6 +27,19 @@ class Game {
             $this->players = unserialize($_SESSION['players']);
             $this->currentPlayer = $_SESSION['player'];
         }
+
+        if (!isset($_SESSION['game_id'])) {
+            $_SESSION['game_id'] = $this->createNewGame();
+        }
+    }
+
+    private function createNewGame() {
+        $db = $this->db->getDBConnection();
+        $stmt = $db->prepare('INSERT INTO games (state) VALUES (?)');
+        $state = getState();
+        $stmt->bind_param('s', $state);
+        $stmt->execute();
+        return $db->insert_id;
     }
 
     public function restart() {
@@ -38,6 +51,10 @@ class Game {
         ];
         $this->currentPlayer = 0;
         $this->saveState();
+
+        if (!isset($_SESSION['game_id'])) {
+            $_SESSION['game_id'] = $this->createNewGame();
+        }
     }
 
     public function clearMoves() {
@@ -167,6 +184,9 @@ class Game {
     }
 
     private function canMovePiece($player, $from, $to, $board) {
+        // Voeg hier de logica toe om te controleren of het stuk geldig kan worden verplaatst
+        // Dit kan specifieke regels bevatten voor verschillende insecten
+        // Voor nu een placeholder return true
         return true;
     }
 
