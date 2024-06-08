@@ -1,20 +1,17 @@
 pipeline {
-    agent { label '!windows' }
+    agent {label '!windows'}
     stages {
         stage('build') {
             steps {
                 sh 'echo "Building..."'
-                sh 'composer install'
             }
         }
         stage('SonarQube') {
             steps {
                 script { scannerHome = tool 'scanner-sonar' }
                 withSonarQubeEnv('SonarQube') {
-                    sh """
-                        ${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=ows-sonarqube
-                    """
+                    sh "${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=ows-sonarqube"
                 }
             }
         }
