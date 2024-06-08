@@ -1,57 +1,31 @@
 <?php
-session_start();
-include_once 'game.php';
 
-$action = $_POST['action'] ?? null;
-$game = new Game();
+require_once 'game.php';
 
-switch ($action) {
-    case 'play':
-        $piece = $_POST['piece'] ?? null;
-        $to = $_POST['to'] ?? null;
-        if ($piece && $to) {
-            if ($game->playPiece($piece, $to)) {
-                header('Location: index.php');
-                exit();
-            }
-        } else {
-            $_SESSION['error'] = "Missing parameters.";
-        }
-        break;
-
-    case 'move':
-        $from = $_POST['from'] ?? null;
-        $to = $_POST['to'] ?? null;
-        if ($from && $to) {
-            if ($game->movePiece($from, $to)) {
-                header('Location: index.php');
-                exit();
-            }
-        } else {
-            $_SESSION['error'] = "Missing parameters.";
-        }
-        break;
-
-    case 'pass':
-        $game->passTurn();
-        header('Location: index.php');
-        exit();
-        break;
-
-    case 'restart':
-        $game->restart();
-        header('Location: index.php');
-        exit();
-        break;
-
-    case 'undo':
-        break;
-
-    default:
-        $_SESSION['error'] = "Invalid action.";
-        break;
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
 }
 
-header('Location: index.php');
-exit();
+$game = new Game();
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['action'])) {
+        $action = $_POST['action'];
+        if ($action == 'play') {
+            $piece = $_POST['piece'];
+            $to = $_POST['to'];
+            $game->playPiece($piece, $to);
+        } elseif ($action == 'move') {
+            $from = $_POST['from'];
+            $to = $_POST['to'];
+            $game->movePiece($from, $to);
+        } elseif ($action == 'pass') {
+            $game->passTurn();
+        } elseif ($action == 'restart') {
+            $game->restart();
+        }
+    }
+    header('Location: index.php');
+    exit();
+}
 ?>

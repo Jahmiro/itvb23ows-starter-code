@@ -13,12 +13,12 @@ class Game {
     private $currentPlayer;
     private $db;
 
-    public function __construct() {
+    public function __construct($db = null) {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        $this->db = new Database();
+        $this->db = $db ?: new Database();
 
         if (!isset($_SESSION['board']) || !is_string($_SESSION['board']) || !isset($_SESSION['players']) || !is_string($_SESSION['players'])) {
             $this->restart();
@@ -33,11 +33,21 @@ class Game {
         }
     }
 
+    public function setBoard($board) {
+        $this->board = $board;
+    }
+
+    public function setPlayers($players) {
+        $this->players = $players;
+    }
+
+    public function setCurrentPlayer($player) {
+        $this->currentPlayer = $player;
+    }
+
     private function createNewGame() {
         $db = $this->db->getDBConnection();
-        $stmt = $db->prepare('INSERT INTO games (state) VALUES (?)');
-        $state = getState();
-        $stmt->bind_param('s', $state);
+        $stmt = $db->prepare('INSERT INTO games () VALUES ()');
         $stmt->execute();
         return $db->insert_id;
     }
@@ -142,19 +152,19 @@ class Game {
             return false;
         } else {
             $piece = end($board[$from]);
-            if ($piece[1] == 'A') { // If the piece is an Ant
+            if ($piece[1] == 'A') { 
                 $ant = new Ant($this->board, $player);
                 if (!$ant->move($from, $to)) {
                     $_SESSION['error'] = "Invalid move for Ant";
                     return false;
                 }
-            } elseif ($piece[1] == 'G') { // If the piece is a Grasshopper
+            } elseif ($piece[1] == 'G') { 
                 $grasshopper = new Grasshopper($this->board, $player);
                 if (!$grasshopper->move($from, $to)) {
                     $_SESSION['error'] = "Invalid move for Grasshopper";
                     return false;
                 }
-            } elseif ($piece[1] == 'S') { // If the piece is a Spider
+            } elseif ($piece[1] == 'S') {
                 $spider = new Spider($this->board, $player);
                 if (!$spider->move($from, $to)) {
                     $_SESSION['error'] = "Invalid move for Spider";
@@ -184,9 +194,6 @@ class Game {
     }
 
     private function canMovePiece($player, $from, $to, $board) {
-        // Voeg hier de logica toe om te controleren of het stuk geldig kan worden verplaatst
-        // Dit kan specifieke regels bevatten voor verschillende insecten
-        // Voor nu een placeholder return true
         return true;
     }
 

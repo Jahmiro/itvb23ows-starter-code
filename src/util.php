@@ -93,10 +93,22 @@ function getAvailableTiles($hand, $player) {
 }
 
 function getState() {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['hand'])) {
+        $_SESSION['hand'] = [[], []];
+    }
+
     return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
 }
 
 function setState($state) {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
     list($a, $b, $c) = unserialize($state);
     $_SESSION['hand'] = $a;
     $_SESSION['board'] = $b;
