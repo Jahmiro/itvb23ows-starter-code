@@ -1,29 +1,83 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
+
+// Zorg ervoor dat de autoloader alle klassen kan vinden
+require_once __DIR__ . '../../src/board.php';
+require_once __DIR__ . '../../src/insects/ant.php';
 
 class AntTest extends TestCase
 {
-    public function testAntMovement()
+    private $board;
+    private $player;
+    private $ant;
+
+    protected function setUp(): void
     {
-        // Mocking the board
-        $board = [
-            '0,0' => [['player', 'A']], // Initial position of the ant
-            '0,1' => [['player', 'Q']], // Stone at (0,1)
-        ];
+        // Stel de testomgeving in
+        $this->board = $this->createMock(Board::class);
+        $this->player = 0; // Stel de speler in (0 voor White, 1 voor Black)
+        $this->ant = new Ant($this->board, $this->player);
+    }
 
-        // Move the ant from (0,0) to (0,1)
-        $board['0,1'] = $board['0,0'];
-        unset($board['0,0']);
+    public function testMoveToOccupiedPosition()
+    {
+        $this->board->method('getPositions')->willReturn([
+            '0,0' => [['0', 'Q']],
+            '1,0' => [['1', 'Q']],
+            '1,1' => [['0', 'A']]
+        ]);
 
-        // Asserting the initial move
-        $this->assertEquals(['0,1' => [['player', 'A']]], $board);
+        $from = '0,0';
+        $to = '1,1';
 
-        // Move the ant from (0,1) to (-1,2)
-        $board['-1,2'] = $board['0,1'];
-        unset($board['0,1']);
+        $this->board->expects($this->never())
+            ->method('movePiece');
 
-        // Asserting the final move
-        $this->assertEquals(['-1,2' => [['player', 'A']]], $board);
+        $result = $this->ant->move($from, $to);
+        $this->assertFalse($result);
+    }
+
+    public function testMoveToNonAdjacentPosition()
+    {
+        $this->board->method('getPositions')->willReturn([
+            '0,0' => [['0', 'Q']],
+            '1,0' => [['1', 'Q']]
+        ]);
+
+        $from = '0,0';
+        $to = '2,2';
+
+        $this->board->expects($this->never())
+            ->method('movePiece');
+
+        $result = $this->ant->move($from, $to);
+        $this->assertFalse($result);
+    }
+
+    public function testMoveThatSplitsHive()
+    {
+        $this->board->method('getPositions')->willReturn([
+            '0,0' => [['0', 'Q']],
+            '1,0' => [['1', 'Q']],
+            '1,1' => [['0', 'A']],
+            '0,1' => [['0', 'S']]
+        ]);
+
+        $from = '0,0';
+        $to = '2,2';
+
+        // Simuleer dat het bord na het verplaatsen de verbinding verbreekt
+        $this->board->method('getPositions')->willReturn([
+            '1,0' => [['1', 'Q']],
+            '1,1' => [['0', 'A']],
+            '0,1' => [['0', 'S']]
+        ]);
+
+        $this->board->expects($this->never())
+            ->method('movePiece');
+
+        $result = $this->ant->move($from, $to);
+        $this->assertFalse($result);
     }
 }
-?>
