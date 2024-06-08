@@ -17,11 +17,9 @@ pipeline {
         }
         stage('PHPUnit') {
             steps {
-                sh '../vendor/bin/phpunit --configuration phpunit.xml'
-            }
-            post {
-                always {
-                    junit '../tests/_output/junit.xml'
+                dir('..') {
+                    sh 'composer update'
+                    sh './vendor/bin/phpunit --configuration phpunit.xml'
                 }
             }
         }
