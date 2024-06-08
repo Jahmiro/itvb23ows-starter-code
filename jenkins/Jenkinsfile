@@ -6,20 +6,20 @@ pipeline {
                 sh 'echo "Building..."'
             }
         }
+        stage('PHPUnit') {
+            steps {
+                dir('..') {
+                    sh 'composer update'
+                    sh './vendor/bin/phpunit --configuration phpunit.xml'
+                }
+            }
+        }
         stage('SonarQube') {
             steps {
                 script { scannerHome = tool 'scanner-sonar' }
                 withSonarQubeEnv('SonarQube') {
                     sh "${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=ows-sonarqube"
-                }
-            }
-        }
-        stage('PHPUnit') {
-            steps {
-                dir('..') {
-                    sh 'composer update'
-                    sh './vendor/bin/phpunit --configuration phpunit.xml'
                 }
             }
         }
