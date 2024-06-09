@@ -1,12 +1,37 @@
 FROM jenkins/jenkins:2.440.1-jdk17
+
+# Gebruik root-gebruiker om systeemafhankelijkheden te installeren
 USER root
+
+# Update de package lijst en installeer lsb-release
 RUN apt-get update && apt-get install -y lsb-release
-RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
-    https://download.docker.com/linux/debian/gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) \
-    signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
-    https://download.docker.com/linux/debian \
-    $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+
+# Voeg de Docker repository sleutel toe
+RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc https://download.docker.com/linux/debian/gpg
+
+# Voeg de Docker repository toe
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.asc] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+
+# Update de package lijst en installeer Docker CLI
 RUN apt-get update && apt-get install -y docker-ce-cli
+
+# Installeer PHP en andere benodigde afhankelijkheden
+RUN apt-get update && apt-get install -y \
+    php \
+    php-cli \
+    php-xml \
+    php-mbstring \
+    git \
+    unzip
+
+# Installeren van Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Controleren of Composer is geïnstalleerd
+RUN composer --version
+
+# Wissel terug naar de jenkins gebruiker
 USER jenkins
+
+# Installeer Jenkins plugins
 RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"

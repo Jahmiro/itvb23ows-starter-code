@@ -1,9 +1,22 @@
 pipeline {
-    agent {label '!windows'}
+    agent { label '!windows' }
     stages {
-         stage('build') {
+        stage('Build') {
             steps {
                 sh 'echo "Building..."'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'echo "Current directory: $(pwd)"'
+                sh 'ls -la'
+                sh 'composer install'
+            }
+        }
+        stage('PHPUnit') {
+            steps {
+                sh 'echo "Running PHPUnit tests..."'
+                sh './vendor/bin/phpunit tests'
             }
         }
         stage('SonarQube') {
@@ -17,5 +30,3 @@ pipeline {
         }
     }
 }
-
-
