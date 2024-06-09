@@ -6,21 +6,11 @@ pipeline {
                 sh 'echo "Building..."'
             }
         }
-        stage('Install Dependencies') {
-            steps {
-                dir('..') {
-                    sh 'echo "Current directory: $(pwd)"'
-                    sh 'ls -la'
-                    sh 'composer install'
-                }
-            }
-        }
         stage('PHPUnit') {
             steps {
-                dir('..') {
-                    sh 'echo "Current directory: $(pwd)"'
-                    sh 'ls -la'
-                    sh './vendor/bin/phpunit --configuration phpunit.xml'
+                dir('tests') {
+                    sh 'composer update'
+                    sh 'php vendor/bin/phpunit tests'
                 }
             }
         }
