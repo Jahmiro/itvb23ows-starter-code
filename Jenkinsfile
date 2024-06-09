@@ -6,12 +6,17 @@ pipeline {
                 sh 'echo "Building..."'
             }
         }
+        stage('Install Dependencies') {
+            steps {
+                sh 'echo "Current directory: $(pwd)"'
+                sh 'ls -la'
+                sh 'composer install'
+            }
+        }
         stage('PHPUnit') {
             steps {
-                dir('tests') {
-                    sh 'composer update'
-                    sh 'php vendor/bin/phpunit tests'
-                }
+                sh 'echo "Running PHPUnit tests..."'
+                sh './vendor/bin/phpunit --verbose'
             }
         }
         stage('SonarQube') {
