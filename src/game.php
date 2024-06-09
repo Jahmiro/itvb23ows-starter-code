@@ -6,6 +6,7 @@ include_once 'util.php';
 include_once './insects/ant.php';
 include_once './insects/grasshopper.php';
 include_once './insects/spider.php';
+include_once 'aiMove.php';
 
 class Game {
     private $board;
@@ -136,6 +137,12 @@ class Game {
             $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], $state);
             $stmt->execute();
             $_SESSION['last_move'] = $db->insert_id;
+
+            // Check if it's the AI's turn
+            if ($this->players[$this->currentPlayer]->getName() == 'Black') {
+                handleAITurn($this);
+            }
+
             return true;
         }
     }
@@ -189,6 +196,12 @@ class Game {
             $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], $state);
             $stmt->execute();
             $_SESSION['last_move'] = $db->insert_id;
+
+            // Check if it's the AI's turn
+            if ($this->players[$this->currentPlayer]->getName() == 'Black') {
+                handleAITurn($this);
+            }
+
             return true;
         }
     }
@@ -273,6 +286,11 @@ class Game {
             $_SESSION['last_move'] = $db->insert_id;
 
             $this->nextTurn();
+
+            // Check if it's the AI's turn
+            if ($this->players[$this->currentPlayer]->getName() == 'Black') {
+                handleAITurn($this);
+            }
         }
     }
 }
