@@ -8,14 +8,18 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                dir('../') {
+                dir('..') {
+                    sh 'echo "Current directory: $(pwd)"'
+                    sh 'ls -la'
                     sh 'composer install'
                 }
             }
         }
         stage('PHPUnit') {
             steps {
-                dir('../') {
+                dir('..') {
+                    sh 'echo "Current directory: $(pwd)"'
+                    sh 'ls -la'
                     sh './vendor/bin/phpunit --configuration phpunit.xml'
                 }
             }
