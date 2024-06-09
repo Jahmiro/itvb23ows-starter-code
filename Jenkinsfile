@@ -16,7 +16,7 @@ pipeline {
         stage('PHPUnit') {
             steps {
                 sh 'echo "Running PHPUnit tests..."'
-                sh './vendor/bin/phpunit'
+                sh './vendor/bin/phpunit tests'
             }
         }
         stage('SonarQube') {
