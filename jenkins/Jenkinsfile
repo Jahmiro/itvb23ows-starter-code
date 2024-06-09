@@ -1,15 +1,21 @@
 pipeline {
-    agent {label '!windows'}
+    agent { label '!windows' }
     stages {
-        stage('build') {
+        stage('Build') {
             steps {
                 sh 'echo "Building..."'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                dir('..') {
+                    sh 'composer install'
+                }
             }
         }
         stage('PHPUnit') {
             steps {
                 dir('..') {
-                    sh 'composer update'
                     sh './vendor/bin/phpunit --configuration phpunit.xml'
                 }
             }
@@ -25,5 +31,3 @@ pipeline {
         }
     }
 }
-
-

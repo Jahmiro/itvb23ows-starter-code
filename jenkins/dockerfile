@@ -15,8 +15,10 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/d
 # Update de package lijst en installeer Docker CLI
 RUN apt-get update && apt-get install -y docker-ce-cli
 
-# Installeer Composer afhankelijkheden
+# Installeer PHP en andere benodigde afhankelijkheden
 RUN apt-get update && apt-get install -y \
+    php \
+    php-cli \
     git \
     unzip
 
