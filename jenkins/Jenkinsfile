@@ -8,14 +8,14 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                dir('..') {
+                dir('../') {
                     sh 'composer install'
                 }
             }
         }
         stage('PHPUnit') {
             steps {
-                dir('..') {
+                dir('../') {
                     sh './vendor/bin/phpunit --configuration phpunit.xml'
                 }
             }
