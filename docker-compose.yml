@@ -1,24 +1,36 @@
 version: '3.8'
 services:
-    php-environment:
-        container_name: hiveGame
-        build:
-            context: ./src
-            dockerfile: Dockerfile
-        depends_on:
-            - db
-        volumes:
-            - ./src:/var/www/html/
-        ports:
-            - 8001:80
-    db:
-        build: ./database
-        image: db
-        environment:
-          MYSQL_ROOT_PASSWORD: ''
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_DATABASE: hive
-        ports:
-            - "3306:3306"
+  php-environment:
+    container_name: hiveGame
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    volumes:
+      - ./src:/var/www/html/
+    ports:
+      - 8001:80
+
+  db:
+    build: ./database
+    image: db
+    environment:
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      MYSQL_DATABASE: hive
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  ai:
+    container_name: hiveAI
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    ports:
+      - 8000:5000
+
 volumes:
-    mysql_data:
+  mysql_data:
